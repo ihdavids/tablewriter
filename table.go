@@ -43,10 +43,11 @@ var (
 )
 
 type Border struct {
-	Left   bool
-	Right  bool
-	Top    bool
-	Bottom bool
+	Left          bool
+	Right         bool
+	Top           bool
+	Bottom        bool
+	CenterMarkers bool
 }
 
 type symbolID int
@@ -135,7 +136,7 @@ func NewWriter(writer io.Writer) *Table {
 		newLine:       NEWLINE,
 		rowLine:       false,
 		hdrLine:       true,
-		borders:       Border{Left: true, Right: true, Bottom: true, Top: true},
+		borders:       Border{Left: true, Right: true, Bottom: true, Top: true, CenterMarkers: true},
 		colSize:       -1,
 		headerParams:  []string{},
 		columnsParams: []string{},
@@ -328,7 +329,7 @@ func (t *Table) SetBorder(border bool) {
 // EnableBorder Set Table Border
 // This would enable / disable line around the table
 func (t *Table) EnableBorder(border bool) {
-	t.SetBorders(Border{border, border, border, border})
+	t.SetBorders(Border{border, border, border, border, border})
 }
 
 // SetBorders SetBorder Set Custom Table Border
@@ -500,6 +501,9 @@ func (t *Table) ClearFooter() {
 // Center based on position and border.
 func (t *Table) center(i int, isFirstRow, isLastRow bool) string {
 	if i == -1 {
+		if !t.borders.CenterMarkers {
+			return t.syms[symNS]
+		}
 		if !t.borders.Left {
 			return t.syms[symEW]
 		}
@@ -513,6 +517,9 @@ func (t *Table) center(i int, isFirstRow, isLastRow bool) string {
 	}
 
 	if i == len(t.cs)-1 {
+		if !t.borders.CenterMarkers {
+			return t.syms[symNS]
+		}
 		if !t.borders.Right {
 			return t.syms[symEW]
 		}
